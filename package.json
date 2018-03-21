@@ -1,10 +1,10 @@
 {
-  "name": "rollup-plugin-html-template",
+  "name": "rollup-plugin-generate-html-template",
   "version": "1.0.0",
   "description": "Rollup plugin for automatically injecting a script tag with the final bundle into an html file.",
-  "main": "dist/rollup-plugin-html-template.js",
-  "module": "dist/rollup-plugin-html-template.module.js",
-  "jsnext:main": "dist/rollup-plugin-html-template.module.js",
+  "main": "dist/rollup-plugin-generate-html-template.js",
+  "module": "dist/rollup-plugin-generate-html-template.module.js",
+  "jsnext:main": "dist/rollup-plugin-generate-html-template.module.js",
   "files": [
     "dist",
     "src",
@@ -13,14 +13,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npm run build:cjs && npm run build:module",
-    "build:cjs": "rollup -c -o ./dist/rollup-plugin-html-template.js -f cjs",
-    "build:module": "rollup -c -o ./dist/rollup-plugin-html-template.module.js -f es",
+    "build:cjs": "rollup -c -o ./dist/rollup-plugin-generate-html-template.js -f cjs",
+    "build:module": "rollup -c -o ./dist/rollup-plugin-generate-html-template.module.js -f es",
     "prebuild": "rimraf dist/*",
     "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bengsfort/rollup-plugin-html-template.git"
+    "url": "git+https://github.com/bengsfort/rollup-plugin-generate-html-template"
   },
   "keywords": [
     "rollup-plugin",
@@ -34,9 +34,9 @@
   "author": "Matt Bengston <bengston.matthew@gmail.com> (https://bengsfort.github.io)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bengsfort/rollup-plugin-html-template/issues"
+    "url": "https://github.com/bengsfort/rollup-plugin-generate-html-template/issues"
   },
-  "homepage": "https://github.com/bengsfort/rollup-plugin-html-template#readme",
+  "homepage": "https://github.com/bengsfort/rollup-plugin-generate-html-template#readme",
   "devDependencies": {
     "eslint": "^4.19.0",
     "eslint-config-google": "^0.9.1",
