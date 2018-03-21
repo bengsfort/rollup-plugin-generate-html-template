@@ -16,13 +16,11 @@ import htmlTemplate from 'rollup-plugin-generate-html-template';
 
 export default {
   entry: 'src/index.js',
-  dest: 'dist/bundle.js',
+  dest: 'dist/js/bundle.js',
   plugins: [
     htmlTemplate({
-      /** The template source file. */
       template: 'src/template.html',
-      /** The name of the output file. */
-      target: 'index.html'
+      target: 'index.html',
     }),
   ],
 };
@@ -49,8 +47,8 @@ On final bundle generation the provided template file will have a `script` tag i
 
 ### Options
 
-- `options.template`: The path to the source template.
-- `options.target`: The file name to use for the html file generated with the bundle.
+- `template`: **(required)** The path to the source template.
+- `target`: The file name to use for the html file generated with the bundle.
 
 ## License
 
