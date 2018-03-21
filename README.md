@@ -1,5 +1,7 @@
 # rollup-plugin-generate-html-template
 
+![build status](https://api.travis-ci.org/bengsfort/rollup-plugin-generate-html-template.svg?branch=master) ![npm version](https://badge.fury.io/js/rollup-plugin-generate-html-template.svg)
+
 Auto-inject the resulting rollup bundle via a `script` tag into a HTML template.
 
 ## Installation
