@@ -18,7 +18,12 @@ export default {
   entry: 'src/index.js',
   dest: 'dist/bundle.js',
   plugins: [
-    htmlTemplate({ file: 'src/index.html' }),
+    htmlTemplate({
+      /** The template source file. */
+      template: 'src/template.html',
+      /** The name of the output file. */
+      target: 'index.html'
+    }),
   ],
 };
 ```
@@ -41,6 +46,11 @@ On final bundle generation the provided template file will have a `script` tag i
 </body>
 </html>
 ```
+
+### Options
+
+- `options.template`: The path to the source template.
+- `options.target`: The file name to use for the html file generated with the bundle.
 
 ## License
 

@@ -17,9 +17,21 @@ describe('rollup-plugin-generate-html-template', function() {
     build({ template: 'fixtures/template.html' })
       .then(() => Promise.all([
         assertExists(targetOutput),
-        assertOutput(targetOutput, '<html><body><h1>Moi minun jäbät</h1><script src="bundle.js"></script></body></html>'),
+        assertOutput(targetOutput, getHtmlString()),
       ]))
       .then(() => done());
+  });
+
+  it('should copy the template to output dir with the provided name', function(done) {
+    const targetOutput = 'output/index.html';
+    build({
+      template: 'fixtures/template.html',
+      target: 'index.html',
+    }).then(() => Promise.all([
+      assertExists(targetOutput),
+      assertOutput(targetOutput, getHtmlString())
+    ]))
+    .then(() => done());
   });
 });
 
@@ -49,6 +61,17 @@ function build(config) {
     format: 'iife',
     name: 'test',
   }));
+}
+
+function getHtmlString(bundle = 'bundle.js') {
+  return `
+  <html>
+    <body>
+      <h1>Moi minun jäbät</h1>
+      <script src="${bundle}"></script>
+    </body>
+  </html>
+  `;
 }
 
 // Asserts that the output of a file matches the content provided.

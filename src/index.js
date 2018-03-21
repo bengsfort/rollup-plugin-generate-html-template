@@ -9,7 +9,17 @@ import path from 'path';
  * @return {Object} The rollup code object.
  */
 export default function htmlTemplate(options = {}) {
-  const { template } = options;
+  const {
+    template,
+    target,
+  } = options;
+
+  // Get the target file name.
+  let targetName = path.basename(target || template);
+  // Add the file suffix if it isn't there.
+  const targetFile = targetName.indexOf('.html') < 0
+    ? `${targetName}.html`
+    : targetName;
 
   return {
     name: 'html-template',
@@ -35,7 +45,7 @@ export default function htmlTemplate(options = {}) {
           // Write the injected template to a file.
           promisify(
             fs.writeFile,
-            path.join(path.dirname(bundle), path.basename(template)),
+            path.join(path.dirname(bundle), targetFile),
             injected
           ).then(() => resolve(), (e) => reject(e));
         })
