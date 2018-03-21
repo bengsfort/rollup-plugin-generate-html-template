@@ -1,6 +1,6 @@
 {
   "name": "rollup-plugin-generate-html-template",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Rollup plugin for automatically injecting a script tag with the final bundle into an html file.",
   "main": "dist/rollup-plugin-generate-html-template.js",
   "module": "dist/rollup-plugin-generate-html-template.module.js",
