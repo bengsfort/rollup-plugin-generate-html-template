@@ -14,7 +14,7 @@ describe('rollup-plugin-generate-html-template', function() {
 
   it('should copy the template to output dir with an injected bundle', function(done) {
     const targetOutput = 'output/template.html';
-    build({ file: 'fixtures/template.html' })
+    build({ template: 'fixtures/template.html' })
       .then(() => Promise.all([
         assertExists(targetOutput),
         assertOutput(targetOutput, '<html><body><h1>Moi minun jäbät</h1><script src="bundle.js"></script></body></html>'),

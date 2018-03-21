@@ -9,30 +9,33 @@ import path from 'path';
  * @return {Object} The rollup code object.
  */
 export default function htmlTemplate(options = {}) {
-  const { file } = options;
+  const { template } = options;
 
   return {
     name: 'html-template',
     onwrite: function write(writeOptions) {
       const bundle = writeOptions.file;
       return new Promise((resolve, reject) =>
-        fs.readFile(file, (err, buffer) => {
+        fs.readFile(template, (err, buffer) => {
           if (err) {
-            reject(err);
-            return;
+            return reject(err);
           }
 
+          // Convert buffer to a string and get the </body> index.
           const tmpl = buffer.toString('utf8');
           const bodyCloseTag = tmpl.lastIndexOf('</body>');
+
+          // Inject the script tag before the body close tag.
           const injected = [
             tmpl.slice(0, bodyCloseTag),
             `<script src="${path.basename(bundle)}"></script>\n`,
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join('');
 
+          // Write the injected template to a file.
           promisify(
             fs.writeFile,
-            path.join(path.dirname(bundle), path.basename(file)),
+            path.join(path.dirname(bundle), path.basename(template)),
             injected
           ).then(() => resolve(), (e) => reject(e));
         })
