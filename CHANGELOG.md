@@ -1,4 +1,4 @@
-# rollup-plugin-html-template
+# rollup-plugin-generate-html-template
 
 ## 1.0.0
 
