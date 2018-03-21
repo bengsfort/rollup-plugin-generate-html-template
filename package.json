@@ -11,7 +11,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "mocha ./test/tests.js --require babel-core/register",
+    "test": "npm run lint && mocha ./test/tests.js --require babel-core/register",
     "pretest": "npm run build",
     "build": "npm run build:cjs && npm run build:module",
     "build:cjs": "rollup -c -o ./dist/rollup-plugin-generate-html-template.js -f cjs",
