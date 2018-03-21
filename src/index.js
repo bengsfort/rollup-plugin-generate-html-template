@@ -26,15 +26,15 @@ export default function htmlTemplate(options = {}) {
           const bodyCloseTag = tmpl.lastIndexOf('</body>');
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            `<script src="${path.basename(bundle)}"></script>`,
+            `<script src="${path.basename(bundle)}"></script>\n`,
             tmpl.slice(bodyCloseTag, tmpl.length),
-          ].join('\n');
+          ].join('');
 
-          return promisify(
+          promisify(
             fs.writeFile,
             path.join(path.dirname(bundle), path.basename(file)),
             injected
-          );
+          ).then(() => resolve(), (e) => reject(e));
         })
       );
     },
