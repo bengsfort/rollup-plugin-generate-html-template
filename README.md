@@ -1,18 +1,18 @@
-# rollup-plugin-html-template
+# rollup-plugin-generate-html-template
 
 Auto-inject the resulting rollup bundle via a `script` tag into a HTML template.
 
 ## Installation
 
 ```shell
-npm install --save-dev rollup-plugin-html-template
+npm install --save-dev rollup-plugin-generate-html-template
 ```
 
 ## Usage
 
 ```js
 // rollup.config.js
-import htmlTemplate from 'rollup-plugin-html-template';
+import htmlTemplate from 'rollup-plugin-generate-html-template';
 
 export default {
   entry: 'src/index.js',
