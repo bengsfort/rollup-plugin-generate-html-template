@@ -1,0 +1,10 @@
+{
+    "rules": {
+        "object-curly-spacing": "off"
+    },
+    "extends": "google",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "sourceType": "module"
+    }
+}

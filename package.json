@@ -1,0 +1,40 @@
+{
+  "name": "rollup-plugin-html-template",
+  "version": "1.0.0",
+  "description": "Rollup plugin for automatically injecting a script tag with the final bundle into an html file.",
+  "main": "dist/rollup-plugin-html-template.js",
+  "module": "dist/rollup-plugin-html-template.module.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run build:cjs && npm run build:module",
+    "build:cjs": "rollup -c -o ./dist/rollup-plugin-html-template.js -f cjs",
+    "build:module": "rollup -c -o ./dist/rollup-plugin-html-template.module.js -f es",
+    "lint": "eslint ./src",
+    "prepublish": "npm run lint && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bengsfort/rollup-plugin-html-template.git"
+  },
+  "keywords": [
+    "rollup-plugin",
+    "bundle",
+    "injection",
+    "rollup",
+    "modules",
+    "html",
+    "template"
+  ],
+  "author": "Matt Bengston <bengston.matthew@gmail.com> (https://bengsfort.github.io)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bengsfort/rollup-plugin-html-template/issues"
+  },
+  "homepage": "https://github.com/bengsfort/rollup-plugin-html-template#readme",
+  "devDependencies": {
+    "eslint": "^4.19.0",
+    "eslint-config-google": "^0.9.1",
+    "rollup": "^0.57.1",
+    "rollup-plugin-buble": "^0.19.2"
+  }
+}
