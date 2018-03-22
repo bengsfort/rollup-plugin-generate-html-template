@@ -10,7 +10,7 @@ const output = 'output/bundle.js';
 process.chdir(__dirname);
 
 describe('rollup-plugin-generate-html-template', function() {
-  after(() => promisify(rimraf, 'output/'));
+  afterEach(() => promisify(rimraf, 'output/'));
 
   it('should copy the template to output dir with an injected bundle', function(done) {
     const targetOutput = 'output/template.html';
@@ -22,16 +22,18 @@ describe('rollup-plugin-generate-html-template', function() {
       .then(() => done());
   });
 
-  it('should copy the template to output dir with the provided name', function(done) {
-    const targetOutput = 'output/index.html';
-    build({
-      template: 'fixtures/template.html',
-      target: 'index.html',
-    }).then(() => Promise.all([
-      assertExists(targetOutput),
-      assertOutput(targetOutput, getHtmlString())
-    ]))
-    .then(() => done());
+  describe('options.target', function() {
+    it('should copy the template to output dir with the provided name', function(done) {
+      const targetOutput = 'output/index.html';
+      build({
+        template: 'fixtures/template.html',
+        target: 'index.html',
+      }).then(() => Promise.all([
+        assertExists(targetOutput),
+        assertOutput(targetOutput, getHtmlString())
+      ]))
+      .then(() => done());
+    });
   });
 });
 
@@ -67,7 +69,7 @@ function getHtmlString(bundle = 'bundle.js') {
   return `
   <html>
     <body>
-      <h1>Moi minun jäbät</h1>
+      <h1>Hello World.</h1>
       <script src="${bundle}"></script>
     </body>
   </html>
