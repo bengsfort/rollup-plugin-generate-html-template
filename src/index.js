@@ -1,6 +1,6 @@
 'use strict';
 
-import fs from 'fs';
+import { readFile, writeFile } from 'fs';
 import path from 'path';
 
 /**
@@ -26,7 +26,7 @@ export default function htmlTemplate(options = {}) {
     onwrite: function write(writeOptions) {
       const bundle = writeOptions.file;
       return new Promise((resolve, reject) =>
-        fs.readFile(template, (err, buffer) => {
+        readFile(template, (err, buffer) => {
           if (err) {
             return reject(err);
           }
@@ -44,7 +44,7 @@ export default function htmlTemplate(options = {}) {
 
           // Write the injected template to a file.
           promisify(
-            fs.writeFile,
+            writeFile,
             path.join(path.dirname(bundle), targetFile),
             injected
           ).then(() => resolve(), (e) => reject(e));
