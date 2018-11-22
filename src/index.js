@@ -23,8 +23,8 @@ export default function htmlTemplate(options = {}) {
 
   return {
     name: 'html-template',
-    onwrite: function write(writeOptions) {
-      const bundle = writeOptions.file;
+    generateBundle: function write(outputOptions, bundle, isWrite) {
+      const bundleFile = outputOptions.file;
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
           if (err) {
@@ -38,14 +38,14 @@ export default function htmlTemplate(options = {}) {
           // Inject the script tag before the body close tag.
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            `<script src="${path.basename(bundle)}"></script>\n`,
+            `<script src="${path.basename(bundleFile)}"></script>\n`,
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join('');
 
           // Write the injected template to a file.
           promisify(
             writeFile,
-            path.join(path.dirname(bundle), targetFile),
+            path.join(path.dirname(bundleFile), targetFile),
             injected
           ).then(() => resolve(), (e) => reject(e));
         })
