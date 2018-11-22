@@ -21,10 +21,27 @@ export default function htmlTemplate(options = {}) {
     ? `${targetName}.html`
     : targetName;
 
+  let inputs = [];
+
   return {
     name: 'html-template',
-    generateBundle: function write(outputOptions, bundle, isWrite) {
-      const bundleFile = outputOptions.file;
+    options(opts) {
+      inputs = Array.isArray(opts.input) ? opts.input : [opts.input];
+      return null;
+    },
+    generateBundle(outputOptions, bundle, isWrite) {
+
+      // get the output dir
+      const outputDir = outputOptions.file
+        ? path.dirname(outputOptions.file)
+        : outputOptions.dir;
+
+      const outputName = outputOptions.file
+        ? [path.basename(outputOptions.file)]
+        : inputs.map((i) => path.basename(i));
+
+      console.log(outputDir, outputName)
+
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
           if (err) {
@@ -38,14 +55,14 @@ export default function htmlTemplate(options = {}) {
           // Inject the script tag before the body close tag.
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            `<script src="${path.basename(bundleFile)}"></script>\n`,
+            `<script src="${outputName[0]}"></script>\n`,
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join('');
 
           // Write the injected template to a file.
           promisify(
             writeFile,
-            path.join(path.dirname(bundleFile), targetFile),
+            path.join(outputDir, targetFile),
             injected
           ).then(() => resolve(), (e) => reject(e));
         })
