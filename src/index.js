@@ -29,7 +29,7 @@ export default function htmlTemplate(options = {}) {
       inputs = Array.isArray(opts.input) ? opts.input : [opts.input];
       return null;
     },
-    async generateBundle(outputOptions, bundle, isWrite) {
+    generateBundle: async function generateBundle(outputOptions, bundle, isWrite) {
 
       // get the output dir
       const outputDir = outputOptions.file
