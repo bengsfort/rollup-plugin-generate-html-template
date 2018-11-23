@@ -29,19 +29,48 @@ export default function htmlTemplate(options = {}) {
       inputs = Array.isArray(opts.input) ? opts.input : [opts.input];
       return null;
     },
-    generateBundle(outputOptions, bundle, isWrite) {
+    async generateBundle(outputOptions, bundle, isWrite) {
 
       // get the output dir
       const outputDir = outputOptions.file
         ? path.dirname(outputOptions.file)
         : outputOptions.dir;
 
-      const outputName = outputOptions.file
+      // get the entry files
+      const entryFiles = outputOptions.file
         ? [path.basename(outputOptions.file)]
         : inputs.map((i) => path.basename(i));
 
-      console.log(outputDir, outputName)
+      // read in the template
+      const tmpl = await promisify(readFile, template, 'utf8');
+      const bodyCloseTag = tmpl.lastIndexOf('</body>');
+      
+      // write out all of the templates based on the entry files
+      return Promise.all(
+        entryFiles.map((name) => {
 
+          // Inject the script tag before the body close tag.
+          const injected = [
+            tmpl.slice(0, bodyCloseTag),
+            `<script src="${name}"></script>\n`,
+            tmpl.slice(bodyCloseTag, tmpl.length),
+          ].join('');
+
+          // convert the entry file extension
+          const outputFile = outputOptions.file
+          ? targetFile
+          : `${path.basename(name, '.js')}.html`
+
+          // Write the injected template to a file.
+          promisify(
+            writeFile,
+            path.join(outputDir, outputFile),
+            injected
+          )
+        })
+      );
+
+/*
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
           if (err) {
@@ -67,6 +96,7 @@ export default function htmlTemplate(options = {}) {
           ).then(() => resolve(), (e) => reject(e));
         })
       );
+*/
     },
   };
 }
