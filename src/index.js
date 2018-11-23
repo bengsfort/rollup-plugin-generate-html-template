@@ -29,8 +29,7 @@ export default function htmlTemplate(options = {}) {
       inputs = Array.isArray(opts.input) ? opts.input : [opts.input];
       return null;
     },
-    generateBundle: async function generateBundle(outputOptions, bundle, isWrite) {
-
+    async generateBundle(outputOptions, bundle, isWrite) {
       // get the output dir
       const outputDir = outputOptions.file
         ? path.dirname(outputOptions.file)
@@ -44,11 +43,10 @@ export default function htmlTemplate(options = {}) {
       // read in the template
       const tmpl = await promisify(readFile, template, 'utf8');
       const bodyCloseTag = tmpl.lastIndexOf('</body>');
-      
+
       // write out all of the templates based on the entry files
       return Promise.all(
         entryFiles.map((name) => {
-
           // Inject the script tag before the body close tag.
           const injected = [
             tmpl.slice(0, bodyCloseTag),
@@ -59,14 +57,14 @@ export default function htmlTemplate(options = {}) {
           // convert the entry file extension
           const outputFile = outputOptions.file
           ? targetFile
-          : `${path.basename(name, '.js')}.html`
+          : `${path.basename(name, '.js')}.html`;
 
           // Write the injected template to a file.
           promisify(
             writeFile,
             path.join(outputDir, outputFile),
             injected
-          )
+          );
         })
       );
 
