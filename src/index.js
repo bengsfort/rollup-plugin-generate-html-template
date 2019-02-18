@@ -9,22 +9,18 @@ import path from 'path';
  * @return {Object} The rollup code object.
  */
 export default function htmlTemplate(options = {}) {
-  const {
-    template,
-    target,
-  } = options;
+  const { template, target } = options;
 
   // Get the target file name.
-  let targetName = path.basename(target || template);
+  const targetName = path.basename(target || template);
   // Add the file suffix if it isn't there.
-  const targetFile = targetName.indexOf('.html') < 0
-    ? `${targetName}.html`
-    : targetName;
+  const targetFile =
+    targetName.indexOf('.html') < 0 ? `${targetName}.html` : targetName;
 
   return {
     name: 'html-template',
-    onwrite: function write(writeOptions) {
-      const bundle = writeOptions.file;
+    generateBundle: function generateBundle(outputOptions) {
+      const bundle = outputOptions.file;
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
           if (err) {
@@ -44,9 +40,9 @@ export default function htmlTemplate(options = {}) {
 
           // Write the injected template to a file.
           promisify(
-            writeFile,
-            path.join(path.dirname(bundle), targetFile),
-            injected
+              writeFile,
+              path.join(path.dirname(bundle), targetFile),
+              injected
           ).then(() => resolve(), (e) => reject(e));
         })
       );
