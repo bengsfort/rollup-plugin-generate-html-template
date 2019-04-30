@@ -17,6 +17,7 @@
     "build:cjs": "rollup -c -o ./dist/rollup-plugin-generate-html-template.js -f cjs",
     "build:module": "rollup -c -o ./dist/rollup-plugin-generate-html-template.module.js -f es",
     "prebuild": "rimraf dist/*",
+    "prepublishOnly": "npm run build",
     "lint": "eslint ./src"
   },
   "repository": {
