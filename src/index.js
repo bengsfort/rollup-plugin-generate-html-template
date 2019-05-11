@@ -23,7 +23,7 @@ export default function htmlTemplate(options = {}) {
       // check output is configured correctly
       if (!outputOptions.file && outputOptions.dir) {
         throw new Error(
-          'Only works with `ouput.file` option not `output.dir` option'
+            'Only works with `ouput.file` option not `output.dir` option'
         );
       }
 
