@@ -20,6 +20,13 @@ export default function htmlTemplate(options = {}) {
   return {
     name: 'html-template',
     generateBundle: function generateBundle(outputOptions) {
+      // check output is configured correctly
+      if (!outputOptions.file && outputOptions.dir) {
+        throw new Error(
+            'Only works with `ouput.file` option not `output.dir` option'
+        );
+      }
+
       const bundle = outputOptions.file;
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
