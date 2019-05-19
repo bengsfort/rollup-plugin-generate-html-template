@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-import { readFile, writeFile } from 'fs';
-import path from 'path';
+import { readFile, writeFile } from "fs";
+import path from "path";
 
 /**
  * Takes an HTML file as a template then adds the bundle to the final file.
@@ -15,18 +15,11 @@ export default function htmlTemplate(options = {}) {
   const targetName = path.basename(target || template);
   // Add the file suffix if it isn't there.
   const targetFile =
-    targetName.indexOf('.html') < 0 ? `${targetName}.html` : targetName;
+    targetName.indexOf(".html") < 0 ? `${targetName}.html` : targetName;
 
   return {
-    name: 'html-template',
+    name: "html-template",
     generateBundle: function generateBundle(outputOptions) {
-      // check output is configured correctly
-      if (!outputOptions.file && outputOptions.dir) {
-        throw new Error(
-            'Only works with `ouput.file` option not `output.dir` option'
-        );
-      }
-
       const bundle = outputOptions.file;
       return new Promise((resolve, reject) =>
         readFile(template, (err, buffer) => {
@@ -35,22 +28,22 @@ export default function htmlTemplate(options = {}) {
           }
 
           // Convert buffer to a string and get the </body> index.
-          const tmpl = buffer.toString('utf8');
-          const bodyCloseTag = tmpl.lastIndexOf('</body>');
+          const tmpl = buffer.toString("utf8");
+          const bodyCloseTag = tmpl.lastIndexOf("</body>");
 
           // Inject the script tag before the body close tag.
           const injected = [
             tmpl.slice(0, bodyCloseTag),
             `<script src="${path.basename(bundle)}"></script>\n`,
             tmpl.slice(bodyCloseTag, tmpl.length),
-          ].join('');
+          ].join("");
 
           // Write the injected template to a file.
           promisify(
-              writeFile,
-              path.join(path.dirname(bundle), targetFile),
-              injected
-          ).then(() => resolve(), (e) => reject(e));
+            writeFile,
+            path.join(path.dirname(bundle), targetFile),
+            injected
+          ).then(() => resolve(), e => reject(e));
         })
       );
     },

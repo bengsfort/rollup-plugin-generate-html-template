@@ -1,0 +1,11 @@
+{
+  "singleQuote": false,
+  "trailingComma": "es5",
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [".babelrc", ".prettierrc", "package.json"],
+      "options": { "parser": "json" }
+    }
+  ]
+}

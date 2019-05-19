@@ -1,2 +1,2 @@
-const foo = 'foo';
+const foo = "foo";
 export default foo;
