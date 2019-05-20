@@ -10,23 +10,27 @@ import path from "path";
  */
 export default function htmlTemplate(options = {}) {
   const { template, target } = options;
-
-  // Get the target file name.
-  const targetName = path.basename(target || template);
-
-  // Add the file suffix if it isn't there.
-  const targetFile =
-    targetName.indexOf(".html") < 0 ? `${targetName}.html` : targetName;
-
   return {
     name: "html-template",
 
     async generateBundle(outputOptions, bundleInfo) {
       const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
       const bundles = getEntryPoints(bundleInfo);
-      //eslint-disable-next-line
       return new Promise(async (resolve, reject) => {
         try {
+          if (!target && !template)
+            throw new Error(
+              "[rollup-plugin-generate-html-template] You did not provide a template or target!"
+            );
+
+          // Get the target file name.
+          const targetName = path.basename(target || template);
+
+          // Add the file suffix if it isn't there.
+          const targetFile =
+            targetName.indexOf(".html") < 0 ? `${targetName}.html` : targetName;
+
+          // Read the file
           const buffer = await fs.readFile(template);
 
           // Convert buffer to a string and get the </body> index
@@ -46,9 +50,7 @@ export default function htmlTemplate(options = {}) {
           await fs.writeFile(finalTarget, injected);
           resolve();
         } catch (e) {
-          console.error(e); //eslint-disable-line
-          throw new Error(e);
-          // reject(e);
+          reject(e);
         }
       });
     },

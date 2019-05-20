@@ -158,16 +158,18 @@ it("should work with chunking", async () => {
   );
 });
 
-it("should work with nested targets", async () => {
-  const BUNDLE_PATH = path.join(TEST_DIR, "index.js");
-  const TEMPLATE_PATH = path.join(TEST_DIR, "nested/template.html");
+it("should work with non-existent targets", async () => {
+  //  TEST_DIR exists, but does not contain dist/
+  const BUNDLE_DIR = path.join(TEST_DIR, "dist");
+  const BUNDLE_PATH = path.join(BUNDLE_DIR, "index.js");
+  const TEMPLATE_PATH = path.join(BUNDLE_DIR, "template.html");
 
   const input = {
     input: `${__dirname}/fixtures/index.js`,
     plugins: [
       htmlTemplate({
         template: `${__dirname}/fixtures/template.html`,
-        target: "nested/template.html",
+        target: "template.html",
       }),
     ],
   };
@@ -176,9 +178,13 @@ it("should work with nested targets", async () => {
     format: "iife",
     name: "test",
   };
+
+  // It should not exist yet
+  await expect(fs.pathExists(BUNDLE_DIR)).resolves.toEqual(false);
+
+  // Do a build...
   const bundle = await rollup(input);
-  await expect(async () => await bundle.write(output)).resolves.not.toThrow();
-  // await bundle.write(output);
+  await bundle.write(output);
 
   // Ensure files exist
   await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
@@ -187,6 +193,26 @@ it("should work with nested targets", async () => {
   // Ensure output has bundle injected properly
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString("../index.js")
+    getHtmlString("index.js")
   );
+});
+
+it("should throw an error if called without the correct props", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+
+  function build() {
+    const input = {
+      input: `${__dirname}/fixtures/index.js`,
+      plugins: [htmlTemplate({})],
+    };
+    const output = {
+      file: BUNDLE_PATH,
+      format: "iife",
+      name: "test",
+    };
+
+    return rollup(input).then(bundle => bundle.write(output));
+  }
+
+  expect(build()).rejects.toThrow();
 });

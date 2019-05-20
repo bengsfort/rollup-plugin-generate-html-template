@@ -4,7 +4,7 @@ import commonJS from "rollup-plugin-commonjs";
 
 export default {
   input: "./src/index.js",
-  external: ["fs", "path"],
+  external: ["fs", "path", "assert", "os", "util", "stream", "constants"],
   plugins: [
     resolve({ preferBuiltins: false }),
     commonJS({ include: "node_modules/**" }),
