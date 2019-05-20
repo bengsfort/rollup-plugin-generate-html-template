@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">84.62% </span>
+        <span class="strong">96.3% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>22/26</span>
+        <span class='fraction'>26/27</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">64.29% </span>
+        <span class="strong">80% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>9/14</span>
+        <span class='fraction'>12/15</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">90% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>9/10</span>
+        <span class='fraction'>7/7</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">90.48% </span>
+        <span class="strong">96.15% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>19/21</span>
+        <span class='fraction'>25/26</span>
       </div>
     </div>
     <p class="quiet">
@@ -112,6 +112,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -133,48 +135,48 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">'use strict';
 &nbsp;
+Object.defineProperty(exports, '__esModule', { value: true });
+&nbsp;
 function _interopDefault (ex) { return (ex &amp;&amp; (typeof ex === 'object') &amp;&amp; 'default' in ex) ? <span class="branch-0 cbranch-no" title="branch not covered" >ex['default'] </span>: ex; }
 &nbsp;
-var fs = require('fs');
+var fs = _interopDefault(require('fs-extra'));
 var path = _interopDefault(require('path'));
 &nbsp;
 /**
@@ -191,54 +193,52 @@ function htmlTemplate(options = <span class="branch-0 cbranch-no" title="branch 
 &nbsp;
   const targetName = path.basename(target || template); // Add the file suffix if it isn't there.
 &nbsp;
-  const targetFile = targetName.indexOf('.html') &lt; 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >`${targetName}.html` </span>: targetName;
+  const targetFile = targetName.indexOf(".html") &lt; 0 ? <span class="branch-0 cbranch-no" title="branch not covered" >`${targetName}.html` </span>: targetName;
   return {
-    name: 'html-template',
-    generateBundle: function generateBundle(outputOptions) {
-      const bundle = outputOptions.file;
-      return new Promise((resolve, reject) =&gt; fs.readFile(template, (err, buffer) =&gt; {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (err) {
-<span class="cstat-no" title="statement not covered" >          return reject(err);</span>
-        } // Convert buffer to a string and get the &lt;/body&gt; index.
+    name: "html-template",
 &nbsp;
+    async generateBundle(outputOptions, bundleInfo) {
+      const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
+      const bundles = getEntryPoints(bundleInfo);
+      return new Promise(async (resolve, reject) =&gt; {
+        try {
+          const buffer = await fs.readFile(template); // Convert buffer to a string and get the &lt;/body&gt; index
 &nbsp;
-        const tmpl = buffer.toString('utf8');
-        const bodyCloseTag = tmpl.lastIndexOf('&lt;/body&gt;'); // Inject the script tag before the body close tag.
+          const tmpl = buffer.toString("utf8");
+          const bodyCloseTag = tmpl.lastIndexOf("&lt;/body&gt;"); // Inject the script tags before the body close tag
 &nbsp;
-        const injected = [tmpl.slice(0, bodyCloseTag), `&lt;script src="${path.basename(bundle)}"&gt;&lt;/script&gt;\n`, tmpl.slice(bodyCloseTag, tmpl.length)].join(''); // Write the injected template to a file.
+          const injected = [tmpl.slice(0, bodyCloseTag), bundles.map(b =&gt; `&lt;script src="${b}"&gt;&lt;/script&gt;\n`), tmpl.slice(bodyCloseTag, tmpl.length)].join(""); // write the injected template to a file
 &nbsp;
-        promisify(fs.writeFile, path.join(path.dirname(bundle), targetFile), injected).then(() =&gt; resolve(), <span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >reject(e))</span>;
-      }));
+          await fs.writeFile(path.join(targetDir, targetFile), injected);
+          resolve();
+        } catch (e) {
+<span class="cstat-no" title="statement not covered" >          reject(e);</span>
+        }
+      });
     }
+&nbsp;
   };
 }
-/**
- * Promisify's a function.
- * @param {Function} fn The function to turn into a promise.
- * @param {any[]} args The arguments for the function.
- * @return {Promise} A Promise for the function.
- */
-&nbsp;
-function promisify(fn, ...args) {
-  return new Promise((resolve, reject) =&gt; {
-    try {
-      fn(...args, (err, res) =&gt; {
-        <span class="missing-if-branch" title="if path not taken" >I</span>if (err) <span class="cstat-no" title="statement not covered" >reject(err);e</span>lse resolve(res);
-      });
-    } catch (e) {
-<span class="cstat-no" title="statement not covered" >      reject(e);</span>
+function getEntryPoints(bundleInfo = {}) {
+  const bundles = Object.keys(bundleInfo);
+  return bundles.reduce((entryPoints, bundle) =&gt; {
+    if (bundleInfo[bundle].isEntry === true) {
+      entryPoints.push(bundle);
     }
-  });
+&nbsp;
+    return entryPoints;
+  }, []);
 }
 &nbsp;
-module.exports = htmlTemplate;
+exports.default = htmlTemplate;
+exports.getEntryPoints = getEntryPoints;
 &nbsp;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun May 19 2019 22:22:22 GMT+0300 (GMT+03:00)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Mon May 20 2019 08:46:34 GMT+0300 (GMT+03:00)
 </div>
 </div>
 <script src="prettify.js"></script>

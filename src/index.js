@@ -1,6 +1,6 @@
 "use strict";
 
-import { readFile, writeFile } from "fs";
+import fs from "fs-extra";
 import path from "path";
 
 /**
@@ -13,58 +13,49 @@ export default function htmlTemplate(options = {}) {
 
   // Get the target file name.
   const targetName = path.basename(target || template);
+
   // Add the file suffix if it isn't there.
   const targetFile =
     targetName.indexOf(".html") < 0 ? `${targetName}.html` : targetName;
 
   return {
     name: "html-template",
-    generateBundle: function generateBundle(outputOptions) {
-      const bundle = outputOptions.file;
-      return new Promise((resolve, reject) =>
-        readFile(template, (err, buffer) => {
-          if (err) {
-            return reject(err);
-          }
 
-          // Convert buffer to a string and get the </body> index.
+    async generateBundle(outputOptions, bundleInfo) {
+      const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
+      const bundles = getEntryPoints(bundleInfo);
+      return new Promise(async (resolve, reject) => {
+        try {
+          const buffer = await fs.readFile(template);
+
+          // Convert buffer to a string and get the </body> index
           const tmpl = buffer.toString("utf8");
           const bodyCloseTag = tmpl.lastIndexOf("</body>");
 
-          // Inject the script tag before the body close tag.
+          // Inject the script tags before the body close tag
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            `<script src="${path.basename(bundle)}"></script>\n`,
+            bundles.map(b => `<script src="${b}"></script>\n`),
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join("");
 
-          // Write the injected template to a file.
-          promisify(
-            writeFile,
-            path.join(path.dirname(bundle), targetFile),
-            injected
-          ).then(() => resolve(), e => reject(e));
-        })
-      );
+          // write the injected template to a file
+          await fs.writeFile(path.join(targetDir, targetFile), injected);
+          resolve();
+        } catch (e) {
+          reject(e);
+        }
+      });
     },
   };
 }
 
-/**
- * Promisify's a function.
- * @param {Function} fn The function to turn into a promise.
- * @param {any[]} args The arguments for the function.
- * @return {Promise} A Promise for the function.
- */
-function promisify(fn, ...args) {
-  return new Promise((resolve, reject) => {
-    try {
-      fn(...args, (err, res) => {
-        if (err) reject(err);
-        else resolve(res);
-      });
-    } catch (e) {
-      reject(e);
+export function getEntryPoints(bundleInfo = {}) {
+  const bundles = Object.keys(bundleInfo);
+  return bundles.reduce((entryPoints, bundle) => {
+    if (bundleInfo[bundle].isEntry === true) {
+      entryPoints.push(bundle);
     }
-  });
+    return entryPoints;
+  }, []);
 }

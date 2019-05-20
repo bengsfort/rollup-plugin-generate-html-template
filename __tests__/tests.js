@@ -3,7 +3,9 @@ import fs from "fs-extra";
 import os from "os";
 import path from "path";
 
-import htmlTemplate from "../dist/rollup-plugin-generate-html-template";
+import htmlTemplate, {
+  getEntryPoints,
+} from "../dist/rollup-plugin-generate-html-template";
 
 let TEST_DIR;
 
@@ -29,6 +31,38 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await fs.emptyDir(TEST_DIR);
+});
+
+it("getEntryPoints should return the entry point bundles", () => {
+  const emptyResult = getEntryPoints();
+  expect(emptyResult).toHaveLength(0);
+
+  const result = getEntryPoints({
+    "styles.css": {
+      fileName: "styles.css",
+      isAsset: true,
+      source: "",
+    },
+    "entry-main.js": {
+      fileName: "entry-main.js",
+      isDynamicEntry: false,
+      isEntry: true,
+    },
+    "entry-bar.js": {
+      fileName: "entry-bar.js",
+      isDynamicEntry: false,
+      isEntry: true,
+    },
+    "chunk-f1e52583.js": {
+      fileName: "chunk-f1e52583.js",
+      isDynamicEntry: true,
+      isEntry: false,
+    },
+  });
+  const expected = ["entry-main.js", "entry-bar.js"];
+
+  expect(result).toHaveLength(2);
+  expect(result).toEqual(expect.arrayContaining(expected));
 });
 
 it("should copy the template to the output dir with an injected single bundle", async () => {
@@ -91,13 +125,13 @@ it("should rename templates if provided a target option.", async () => {
 
 it("should work with chunking", async () => {
   const BUNDLE_CHUNK_1 = path.join(TEST_DIR, "entry-index.js");
-  const BUNDLE_CHUNK_2 = path.join(TEST_DIR, "entry-bar.js");
+  const BUNDLE_CHUNK_2 = path.join(TEST_DIR, "entry-nested/bar.js");
   const TEMPLATE_PATH = path.join(TEST_DIR, "index.html");
 
   const input = {
     input: {
       index: `${__dirname}/fixtures/index.js`,
-      bar: `${__dirname}/fixtures/bar.js`,
+      "nested/bar": `${__dirname}/fixtures/nested/bar.js`,
     },
     plugins: [
       htmlTemplate({
@@ -112,11 +146,7 @@ it("should work with chunking", async () => {
     entryFileNames: "entry-[name].js",
   };
   const bundle = await rollup(input);
-  bundle.write(output);
-
-  console.log("test dirs:", TEST_DIR);
-  const files = await fs.readdir(TEST_DIR);
-  console.log("Files:", files);
+  await bundle.write(output);
 
   // Ensure files exist
   await expect(fs.pathExists(BUNDLE_CHUNK_1)).resolves.toEqual(true);
@@ -126,6 +156,6 @@ it("should work with chunking", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\W]/gi, "")).toEqual(
-    getHtmlString(["index.js", "chunked.js"])
+    getHtmlString(["entry-index.js", "entry-nested/bar.js"])
   );
 });
