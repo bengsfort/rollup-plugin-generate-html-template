@@ -24,6 +24,7 @@ export default function htmlTemplate(options = {}) {
     async generateBundle(outputOptions, bundleInfo) {
       const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
       const bundles = getEntryPoints(bundleInfo);
+      //eslint-disable-next-line
       return new Promise(async (resolve, reject) => {
         try {
           const buffer = await fs.readFile(template);
@@ -40,17 +41,21 @@ export default function htmlTemplate(options = {}) {
           ].join("");
 
           // write the injected template to a file
-          await fs.writeFile(path.join(targetDir, targetFile), injected);
+          const finalTarget = path.join(targetDir, targetFile);
+          await fs.ensureFile(finalTarget);
+          await fs.writeFile(finalTarget, injected);
           resolve();
         } catch (e) {
-          reject(e);
+          console.error(e); //eslint-disable-line
+          throw new Error(e);
+          // reject(e);
         }
       });
     },
   };
 }
 
-export function getEntryPoints(bundleInfo = {}) {
+function getEntryPoints(bundleInfo = {}) {
   const bundles = Object.keys(bundleInfo);
   return bundles.reduce((entryPoints, bundle) => {
     if (bundleInfo[bundle].isEntry === true) {
@@ -59,3 +64,6 @@ export function getEntryPoints(bundleInfo = {}) {
     return entryPoints;
   }, []);
 }
+
+// Expose getEntryPoints for testing
+htmlTemplate.getEntryPoints = getEntryPoints;

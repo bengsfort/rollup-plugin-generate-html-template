@@ -3,9 +3,7 @@ import fs from "fs-extra";
 import os from "os";
 import path from "path";
 
-import htmlTemplate, {
-  getEntryPoints,
-} from "../dist/rollup-plugin-generate-html-template";
+import htmlTemplate from "../src";
 
 let TEST_DIR;
 
@@ -21,7 +19,7 @@ function getHtmlString(bundle = "bundle.js") {
       }
     </body>
   </html>
-  `.replace(/[\W]/gi, "");
+  `.replace(/[\s]/gi, "");
 }
 
 beforeEach(async () => {
@@ -34,10 +32,10 @@ afterAll(async () => {
 });
 
 it("getEntryPoints should return the entry point bundles", () => {
-  const emptyResult = getEntryPoints();
+  const emptyResult = htmlTemplate.getEntryPoints();
   expect(emptyResult).toHaveLength(0);
 
-  const result = getEntryPoints({
+  const result = htmlTemplate.getEntryPoints({
     "styles.css": {
       fileName: "styles.css",
       isAsset: true,
@@ -92,7 +90,7 @@ it("should copy the template to the output dir with an injected single bundle", 
 
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
-  expect(generatedTemplate.replace(/[\W]/gi, "")).toEqual(
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
     getHtmlString("bundle.js")
   );
 });
@@ -155,7 +153,40 @@ it("should work with chunking", async () => {
 
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
-  expect(generatedTemplate.replace(/[\W]/gi, "")).toEqual(
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
     getHtmlString(["entry-index.js", "entry-nested/bar.js"])
+  );
+});
+
+it("should work with nested targets", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "index.js");
+  const TEMPLATE_PATH = path.join(TEST_DIR, "nested/template.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template.html`,
+        target: "nested/template.html",
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await expect(async () => await bundle.write(output)).resolves.not.toThrow();
+  // await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected properly
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
+    getHtmlString("../index.js")
   );
 });
