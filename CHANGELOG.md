@@ -1,5 +1,14 @@
 # rollup-plugin-generate-html-template
 
+## 1.2.0
+- Ensure output directories exist before creating anything (fixes #5)
+- Inject all entry points instead of failing, but does not embed dynamic imports (fixes #7)
+- Update to Babel7
+- Switch to jest tests
+- Updates formatting of project to use prettier + better eslint rules
+- Add code coverage checks
+
+
 ## 1.1.0
 
 - Fixed issue where template creation promise would not resolve. (bengsfort/rollup-plugin-generate-html-template@b0bb659)
