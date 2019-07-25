@@ -7,15 +7,15 @@ import htmlTemplate from "../src";
 
 let TEST_DIR;
 
-function getHtmlString(bundle = "bundle.js") {
+function getHtmlString(bundle = "bundle.js", prefix = "") {
   return `
   <html>
     <body>
       <h1>Hello World.</h1>
       ${
         typeof bundle !== "string" && bundle.length
-          ? bundle.map(b => `<script src="${b}"></script>`)
-          : `<script src="${bundle}"></script>`
+          ? bundle.map(b => `<script src="${prefix}${b}"></script>`)
+          : `<script src="${prefix}${bundle}"></script>`
       }
     </body>
   </html>
@@ -194,6 +194,39 @@ it("should work with non-existent targets", async () => {
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
     getHtmlString("index.js")
+  );
+});
+
+it("should append a prefix to script path if specified", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  // Defaults to not renaming the template.
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template.html`,
+        prefix: '/shared/'
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
+    getHtmlString("bundle.js", '/shared/')
   );
 });
 
