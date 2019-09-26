@@ -14,9 +14,7 @@ function getHtmlString(bundle = "bundle.js", prefix = "", attrs = []) {
       <h1>Hello World.</h1>
       ${
         typeof bundle !== "string" && bundle.length
-          ? bundle.map(
-              b => `<script ${attrs.join(" ")} src="${prefix}${b}"></script>`
-            )
+          ? bundle.map(b => `<script src="${prefix}${b}"></script>`)
           : `<script ${attrs.join(" ")} src="${prefix}${bundle}"></script>`
       }
     </body>
@@ -63,6 +61,39 @@ it("getEntryPoints should return the entry point bundles", () => {
 
   expect(result).toHaveLength(2);
   expect(result).toEqual(expect.arrayContaining(expected));
+});
+
+it("should correctly add the attributes to the injected script tag", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  // Defaults to not renaming the template.
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template.html`,
+        attrs: ["async", "defer"],
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
+    getHtmlString("bundle.js", "", ["async", "defer"])
+  );
 });
 
 it("should copy the template to the output dir with an injected single bundle", async () => {
@@ -137,7 +168,6 @@ it("should work with chunking", async () => {
       htmlTemplate({
         template: `${__dirname}/fixtures/template.html`,
         target: "index.html",
-        attrs: ["async", "defer"],
       }),
     ],
   };
@@ -157,7 +187,7 @@ it("should work with chunking", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString(["entry-index.js", "entry-nested/bar.js", ["async", "defer"]])
+    getHtmlString(["entry-index.js", "entry-nested/bar.js"])
   );
 });
 
