@@ -14,7 +14,11 @@ function getHtmlString(bundle = "bundle.js", prefix = "", attrs = []) {
       <h1>Hello World.</h1>
       ${
         typeof bundle !== "string" && bundle.length
-          ? bundle.map(b => `<script src="${prefix}${b}"></script>`)
+          ? bundle
+              .map(
+                b => `<script ${attrs.join(" ")} src="${prefix}${b}"></script>`
+              )
+              .join("")
           : `<script ${attrs.join(" ")} src="${prefix}${bundle}"></script>`
       }
     </body>

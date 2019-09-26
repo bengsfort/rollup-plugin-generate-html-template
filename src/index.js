@@ -41,7 +41,7 @@ export default function htmlTemplate(options = {}) {
           // Inject the script tags before the body close tag
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            bundles.map(
+            ...bundles.map(
               b =>
                 `<script ${scriptTagAttributes.join(" ")} src="${prefix ||
                   ""}${b}"></script>\n`
