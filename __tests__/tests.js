@@ -284,5 +284,5 @@ it("should throw an error if called without the correct props", async () => {
     return rollup(input).then(bundle => bundle.write(output));
   }
 
-  expect(build()).rejects.toThrow();
+  expect(build()).rejects.toThrow(htmlTemplate.INVALID_ARGS_ERROR);
 });

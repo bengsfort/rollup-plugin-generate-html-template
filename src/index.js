@@ -3,6 +3,9 @@
 import fs from "fs-extra";
 import path from "path";
 
+const INVALID_ARGS_ERROR =
+  "[rollup-plugin-generate-html-template] You did not provide a template or target!";
+
 /**
  * Takes an HTML file as a template then adds the bundle to the final file.
  * @param {Object} options The options object.
@@ -19,10 +22,7 @@ export default function htmlTemplate(options = {}) {
       const bundles = getEntryPoints(bundleInfo);
       return new Promise(async (resolve, reject) => {
         try {
-          if (!target && !template)
-            throw new Error(
-              "[rollup-plugin-generate-html-template] You did not provide a template or target!"
-            );
+          if (!target && !template) throw new Error(INVALID_ARGS_ERROR);
 
           // Get the target file name.
           const targetName = path.basename(target || template);
@@ -74,3 +74,4 @@ function getEntryPoints(bundleInfo = {}) {
 
 // Expose getEntryPoints for testing
 htmlTemplate.getEntryPoints = getEntryPoints;
+htmlTemplate.INVALID_ARGS_ERROR = INVALID_ARGS_ERROR;
