@@ -9,7 +9,8 @@ import path from "path";
  * @return {Object} The rollup code object.
  */
 export default function htmlTemplate(options = {}) {
-  const { template, target, prefix } = options;
+  const { template, target, prefix, attrs } = options;
+  const scriptTagAttributes = attrs && attrs.length > 0 ? attrs : [];
   return {
     name: "html-template",
 
@@ -40,7 +41,11 @@ export default function htmlTemplate(options = {}) {
           // Inject the script tags before the body close tag
           const injected = [
             tmpl.slice(0, bodyCloseTag),
-            bundles.map(b => `<script src="${prefix || ''}${b}"></script>\n`),
+            bundles.map(
+              b =>
+                `<script ${scriptTagAttributes.join(" ")} src="${prefix ||
+                  ""}${b}"></script>\n`
+            ),
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join("");
 
