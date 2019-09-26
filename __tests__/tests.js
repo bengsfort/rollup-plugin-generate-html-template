@@ -7,15 +7,17 @@ import htmlTemplate from "../src";
 
 let TEST_DIR;
 
-function getHtmlString(bundle = "bundle.js", prefix = "") {
+function getHtmlString(bundle = "bundle.js", prefix = "", attrs = []) {
   return `
   <html>
     <body>
       <h1>Hello World.</h1>
       ${
         typeof bundle !== "string" && bundle.length
-          ? bundle.map(b => `<script src="${prefix}${b}"></script>`)
-          : `<script src="${prefix}${bundle}"></script>`
+          ? bundle.map(
+              b => `<script ${attrs.join(" ")} src="${prefix}${b}"></script>`
+            )
+          : `<script ${attrs.join(" ")} src="${prefix}${bundle}"></script>`
       }
     </body>
   </html>
@@ -135,6 +137,7 @@ it("should work with chunking", async () => {
       htmlTemplate({
         template: `${__dirname}/fixtures/template.html`,
         target: "index.html",
+        attrs: ["async", "defer"],
       }),
     ],
   };
@@ -154,7 +157,7 @@ it("should work with chunking", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString(["entry-index.js", "entry-nested/bar.js"])
+    getHtmlString(["entry-index.js", "entry-nested/bar.js", ["async", "defer"]])
   );
 });
 
@@ -207,7 +210,7 @@ it("should append a prefix to script path if specified", async () => {
     plugins: [
       htmlTemplate({
         template: `${__dirname}/fixtures/template.html`,
-        prefix: '/shared/'
+        prefix: "/shared/",
       }),
     ],
   };
@@ -226,7 +229,7 @@ it("should append a prefix to script path if specified", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString("bundle.js", '/shared/')
+    getHtmlString("bundle.js", "/shared/")
   );
 });
 
