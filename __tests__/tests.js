@@ -7,11 +7,17 @@ import htmlTemplate from "../src";
 
 let TEST_DIR;
 
-function getHtmlString(bundle = "bundle.js", prefix = "", attrs = []) {
+function getHtmlString(
+  bundle = "bundle.js",
+  prefix = "",
+  attrs = [],
+  replaceValue
+) {
   return `
   <html>
     <body>
       <h1>Hello World.</h1>
+        ${Boolean(replaceValue) ? `<h2>${replaceValue}</h2>` : ""}
       ${
         typeof bundle !== "string" && bundle.length
           ? bundle
@@ -97,6 +103,40 @@ it("should correctly add the attributes to the injected script tag", async () =>
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
     getHtmlString("bundle.js", "", ["async", "defer"])
+  );
+});
+
+it("correctly replaces HTML variables", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  // Defaults to not renaming the template.
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template_replace.html");
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template_replace.html`,
+        replaceVars: {
+          __HOME_URL__: "cool.com",
+        },
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
+    getHtmlString("bundle.js", "", [], "cool.com")
   );
 });
 

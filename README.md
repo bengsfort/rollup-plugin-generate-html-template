@@ -51,6 +51,10 @@ On final bundle generation the provided template file will have a `script` tag i
 
 - `template`: **(required)** The path to the source template.
 - `target`: The file name to use for the html file generated with the bundle.
+- `attrs`: The attributes provided to the generated bundle script tag. Passed as an array of strings
+  Example: `attrs: ['async', 'defer]` will generate `<script async defer src="bundle.js"></script>`
+- `replaceVars`: An object containing variables that will be replaced in the generated html.
+    Example: `replaceVars: { '__CDN_URL__': process.env.NODE_ENV === 'production' ? 'https://mycdn.com' : '' }` will replace all instances of `__CDN_URL__` with `http://mycdn.com` if the environment is production
 
 ## License
 
