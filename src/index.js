@@ -12,7 +12,7 @@ const INVALID_ARGS_ERROR =
  * @return {Object} The rollup code object.
  */
 export default function htmlTemplate(options = {}) {
-  const { template, target, prefix, attrs } = options;
+  const { template, target, prefix, attrs, replaceVars } = options;
   const scriptTagAttributes = attrs && attrs.length > 0 ? attrs : [];
   return {
     name: "html-template",
@@ -35,7 +35,13 @@ export default function htmlTemplate(options = {}) {
           const buffer = await fs.readFile(template);
 
           // Convert buffer to a string and get the </body> index
-          const tmpl = buffer.toString("utf8");
+          let tmpl = buffer.toString("utf8");
+          if (replaceVars) {
+            const replacePairs = Object.entries(replaceVars);
+            replacePairs.forEach(pair => {
+              tmpl = tmpl.replace(pair[0], pair[1]);
+            });
+          }
           const bodyCloseTag = tmpl.lastIndexOf("</body>");
 
           // Inject the script tags before the body close tag
