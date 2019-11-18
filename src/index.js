@@ -2,6 +2,7 @@
 
 import fs from "fs-extra";
 import path from "path";
+import escapeStringRegexp from "escape-string-regexp";
 
 const INVALID_ARGS_ERROR =
   "[rollup-plugin-generate-html-template] You did not provide a template or target!";
@@ -38,8 +39,10 @@ export default function htmlTemplate(options = {}) {
           let tmpl = buffer.toString("utf8");
           if (replaceVars) {
             const replacePairs = Object.entries(replaceVars);
-            replacePairs.forEach(pair => {
-              tmpl = tmpl.replace(pair[0], pair[1]);
+            replacePairs.forEach(([pattern, replacement]) => {
+              const escapedPattern = escapeStringRegexp(pattern);
+              const regex = new RegExp(`${escapedPattern}`, "g");
+              tmpl = tmpl.replace(regex, replacement);
             });
           }
           const bodyCloseTag = tmpl.lastIndexOf("</body>");

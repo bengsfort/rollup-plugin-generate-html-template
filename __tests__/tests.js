@@ -11,13 +11,19 @@ function getHtmlString(
   bundle = "bundle.js",
   prefix = "",
   attrs = [],
-  replaceValue
+  replaceValues = []
 ) {
   return `
   <html>
     <body>
       <h1>Hello World.</h1>
-        ${Boolean(replaceValue) ? `<h2>${replaceValue}</h2>` : ""}
+        ${Boolean(replaceValues[0]) ? `<h2>${replaceValues[0]}</h2>` : ""}
+        ${
+          Boolean(replaceValues[0])
+            ? `<a href="${replaceValues[0]}">${replaceValues[0]}</a>`
+            : ""
+        }
+        ${Boolean(replaceValues[1]) ? `<p>${replaceValues[1]}</p>` : ""}
       ${
         typeof bundle !== "string" && bundle.length
           ? bundle
@@ -106,7 +112,7 @@ it("should correctly add the attributes to the injected script tag", async () =>
   );
 });
 
-it("correctly replaces HTML variables", async () => {
+it("correctly replaces all HTML variables", async () => {
   const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
   // Defaults to not renaming the template.
   const TEMPLATE_PATH = path.join(TEST_DIR, "template_replace.html");
@@ -117,6 +123,7 @@ it("correctly replaces HTML variables", async () => {
         template: `${__dirname}/fixtures/template_replace.html`,
         replaceVars: {
           __HOME_URL__: "cool.com",
+          "__COMPLEX__!@$#{}/()_REPLACEMENT__": "complex replacement",
         },
       }),
     ],
@@ -136,7 +143,7 @@ it("correctly replaces HTML variables", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString("bundle.js", "", [], "cool.com")
+    getHtmlString("bundle.js", "", [], ["cool.com", "complex replacement"])
   );
 });
 
