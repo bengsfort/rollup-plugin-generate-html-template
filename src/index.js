@@ -19,7 +19,6 @@ export default function htmlTemplate(options = {}) {
     name: "html-template",
 
     async generateBundle(outputOptions, bundleInfo) {
-      const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
       const bundles = getEntryPoints(bundleInfo);
       return new Promise(async (resolve, reject) => {
         try {
@@ -57,6 +56,13 @@ export default function htmlTemplate(options = {}) {
             ),
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join("");
+
+          const defaultDir =
+            outputOptions.dir || path.dirname(outputOptions.file);
+          const targetDir =
+            target && path.dirname(target) !== "."
+              ? path.dirname(target)
+              : defaultDir;
 
           // write the injected template to a file
           const finalTarget = path.join(targetDir, targetFile);

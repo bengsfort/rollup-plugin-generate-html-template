@@ -205,6 +205,36 @@ it("should rename templates if provided a target option.", async () => {
   await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
 });
 
+it("should save template into directory if provided target option is a directory.", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "public/build/bundle.js");
+  const TEMPLATE_PATH = path.join(TEST_DIR, "public/index.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template.html`,
+        prefix: "build/",
+        target: TEMPLATE_PATH,
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+  const resultHtml = await fs.readFile(TEMPLATE_PATH, "utf8");
+  const [, srcString] = resultHtml.match(/<script.*src="(.*)">/);
+  expect(srcString).toEqual("build/bundle.js");
+});
+
 it("should work with chunking", async () => {
   const BUNDLE_CHUNK_1 = path.join(TEST_DIR, "entry-index.js");
   const BUNDLE_CHUNK_2 = path.join(TEST_DIR, "entry-nested/bar.js");

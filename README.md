@@ -50,7 +50,7 @@ On final bundle generation the provided template file will have a `script` tag i
 ### Options
 
 - `template`: **(required)** The path to the source template.
-- `target`: The file name to use for the html file generated with the bundle.
+- `target`: The directory and file name to use for the html file generated with the bundle.
 - `attrs`: The attributes provided to the generated bundle script tag. Passed as an array of strings
   Example: `attrs: ['async', 'defer]` will generate `<script async defer src="bundle.js"></script>`
 - `replaceVars`: An object containing variables that will be replaced in the generated html.
