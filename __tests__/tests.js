@@ -214,7 +214,6 @@ it("should save template into directory if provided target option is a directory
     plugins: [
       htmlTemplate({
         template: `${__dirname}/fixtures/template.html`,
-        prefix: "build/",
         target: TEMPLATE_PATH,
       }),
     ],
