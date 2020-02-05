@@ -19,11 +19,22 @@ export default function htmlTemplate(options = {}) {
     name: "html-template",
 
     async generateBundle(outputOptions, bundleInfo) {
-      const targetDir = outputOptions.dir || path.dirname(outputOptions.file);
       const bundles = getEntryPoints(bundleInfo);
       return new Promise(async (resolve, reject) => {
         try {
           if (!target && !template) throw new Error(INVALID_ARGS_ERROR);
+
+          const outputDir =
+            outputOptions.dir || path.dirname(outputOptions.file);
+
+          let targetDir = outputDir;
+          let bundleDirString = "";
+
+          if (target && path.dirname(target) !== ".") {
+            targetDir = path.dirname(target);
+            const bundleDir = path.relative(targetDir, outputDir);
+            bundleDirString = bundleDir && `${bundleDir}/`;
+          }
 
           // Get the target file name.
           const targetName = path.basename(target || template);
@@ -52,8 +63,9 @@ export default function htmlTemplate(options = {}) {
             tmpl.slice(0, bodyCloseTag),
             ...bundles.map(
               b =>
-                `<script ${scriptTagAttributes.join(" ")} src="${prefix ||
-                  ""}${b}"></script>\n`
+                `<script ${scriptTagAttributes.join(
+                  " "
+                )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
             ),
             tmpl.slice(bodyCloseTag, tmpl.length),
           ].join("");
