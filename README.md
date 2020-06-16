@@ -33,16 +33,23 @@ On final bundle generation the provided template file will have a `script` tag i
 ```html
 <!-- src/index.html -->
 <html>
+  <head>
+    <title>Example</title>
+  <head>
 <body>
-    <canvas id="main"></canvas>
+  <canvas id="main"></canvas>
 </body>
 </html>
 
 <!-- dist/index.html -->
 <html>
+  <head>
+    <title>Example</title>
+    <link rel="stylesheet" type="text/css" href="bundle.css">
+  <head>
 <body>
-    <canvas id="main"></canvas>
-    <script src="bundle.js"></script>
+  <canvas id="main"></canvas>
+  <script src="bundle.js"></script>
 </body>
 </html>
 ```
