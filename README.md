@@ -2,7 +2,7 @@
 
 ![build status](https://api.travis-ci.org/bengsfort/rollup-plugin-generate-html-template.svg?branch=master) [![npm version](https://badge.fury.io/js/rollup-plugin-generate-html-template.svg)](https://www.npmjs.com/package/rollup-plugin-generate-html-template) ![code coverage](coverage/coverage.svg)
 
-Auto-inject the resulting rollup bundle via a `script` tag into a HTML template.
+Auto-inject the resulting rollup bundle via a `script` and `link` tags into an HTML template.
 
 ## Installation
 
@@ -28,7 +28,7 @@ export default {
 };
 ```
 
-On final bundle generation the provided template file will have a `script` tag injected directly above the closing `body` tag with a link to the js bundle. By default it uses the same file name and places it directly next to the JS bundle.
+On final bundle generation the provided template file will have a `script` tag injected directly above the closing `body` tag with a link to the js bundle and similarly a `link` tag above the closing `head` to the css bundle. By default it uses the same file name and places it directly next to the JS bundle.
 
 ```html
 <!-- src/index.html -->
