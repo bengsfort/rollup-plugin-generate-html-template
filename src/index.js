@@ -20,6 +20,7 @@ export default function htmlTemplate(options = {}) {
 
     async generateBundle(outputOptions, bundleInfo) {
       const bundles = getEntryPoints(bundleInfo);
+      const bundleKeys = Object.keys(bundleInfo);
       return new Promise(async (resolve, reject) => {
         try {
           if (!target && !template) throw new Error(INVALID_ARGS_ERROR);
@@ -56,18 +57,34 @@ export default function htmlTemplate(options = {}) {
               tmpl = tmpl.replace(regex, replacement);
             });
           }
-          const bodyCloseTag = tmpl.lastIndexOf("</body>");
+
+          let injected = tmpl
+
+          // Inject the style tags before the head close tag
+          const headCloseTag = injected.lastIndexOf("</head>");
 
           // Inject the script tags before the body close tag
-          const injected = [
-            tmpl.slice(0, bodyCloseTag),
-            ...bundles.map(
+          injected = [
+            injected.slice(0, headCloseTag),
+            ...bundleKeys.filter(f => path.extname(f) === '.css').map(
+              b =>
+                `<link rel="stylesheet" type="text/css" href="${prefix || ""}${b}">\n`
+            ),
+            injected.slice(headCloseTag, injected.length),
+          ].join("");
+
+          const bodyCloseTag = injected.lastIndexOf("</body>");
+
+          // Inject the script tags before the body close tag
+          injected = [
+            injected.slice(0, bodyCloseTag),
+            ...bundleKeys.filter(f => path.extname(f) === '.js').map(
               b =>
                 `<script ${scriptTagAttributes.join(
                   " "
                 )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
             ),
-            tmpl.slice(bodyCloseTag, tmpl.length),
+            injected.slice(bodyCloseTag, injected.length),
           ].join("");
 
           // write the injected template to a file
