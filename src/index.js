@@ -83,10 +83,16 @@ export default function htmlTemplate(options = {}) {
             ...bundleKeys
               .filter(f => path.extname(f) === ".js")
               .map(
-                b =>
-                  `<script ${scriptTagAttributes.join(
-                    " "
-                  )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
+                async b =>
+                // For embedContent option, stuff bundle content into HTML directly,
+                // otherwise, prepare script with src tag only.
+                  options.embedContent
+                  ? `<script>\n${await fs.readFile(
+                      `${outputDir}${path.sep}${prefix || ""}${b}`
+                    )}\n</script>`
+                  : `<script ${scriptTagAttributes.join(
+                      " "
+                    )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
               ),
             injected.slice(bodyCloseTag, injected.length),
           ].join("");
