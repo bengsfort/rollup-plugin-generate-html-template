@@ -80,20 +80,22 @@ export default function htmlTemplate(options = {}) {
           // Inject the script tags before the body close tag
           injected = [
             injected.slice(0, bodyCloseTag),
-            ...bundleKeys
-              .filter(f => path.extname(f) === ".js")
-              .map(
-                async b =>
-                // For embedContent option, stuff bundle content into HTML directly,
-                // otherwise, prepare script with src tag only.
+            ...(await Promise.all(
+              bundleKeys
+                .filter(f => path.extname(f) === ".js")
+                .map(async b =>
+                  // For embedContent option, stuff bundle content into HTML directly,
+                  // otherwise, prepare script with src tag only.
                   options.embedContent
-                  ? `<script>\n${await fs.readFile(
-                      `${outputDir}${path.sep}${prefix || ""}${b}`
-                    )}\n</script>`
-                  : `<script ${scriptTagAttributes.join(
-                      " "
-                    )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
-              ),
+                    ? `<script>\n${await fs.readFile(
+                        `${outputDir}${path.sep}${prefix || ""}${b}`
+                      )}\n</script>`
+                    : `<script ${scriptTagAttributes.join(
+                        " "
+                      )} src="${bundleDirString}${prefix ||
+                        ""}${b}"></script>\n`
+                )
+            )),
             injected.slice(bodyCloseTag, injected.length),
           ].join("");
 

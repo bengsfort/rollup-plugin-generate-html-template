@@ -377,7 +377,7 @@ it("should throw an error if called without the correct props", async () => {
   expect(build()).rejects.toThrow(htmlTemplate.INVALID_ARGS_ERROR);
 });
 
-it("should add any css files to the head of the template", async () => {
+it("should add any css files to the head of the template (#23)", async () => {
   const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
   const TEMPLATE_PATH = path.join(TEST_DIR, "template_inject_css.html");
 
@@ -410,4 +410,43 @@ it("should add any css files to the head of the template", async () => {
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
     getHtmlString("bundle.js", "", [], [], "CSS Injection Test", ["bundle.css"])
   );
+});
+
+it("shuold embed the bundle if `embedContent` is enabled (#26)", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  // Defaults to not renaming the template.
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        embedContent: true,
+        template: `${__dirname}/fixtures/template.html`,
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+
+  const expected = `
+  <html>
+  <body>
+    <h1>Hello World.</h1>
+    <script></script>
+  </body>
+</html>
+  `.replace(/[\s]/gi, "");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(expected);
 });
