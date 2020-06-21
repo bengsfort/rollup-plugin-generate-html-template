@@ -1,20 +1,30 @@
-import { rollup } from "rollup";
 import fs from "fs-extra";
+import htmlTemplate from "../src";
 import os from "os";
 import path from "path";
-
-import htmlTemplate from "../src";
+import postcss from "rollup-plugin-postcss";
+import { rollup } from "rollup";
 
 let TEST_DIR;
 
+// @todo: This should really be broken out into a separate file, it's getting a bit outrageous.
 function getHtmlString(
   bundle = "bundle.js",
   prefix = "",
   attrs = [],
-  replaceValues = []
+  replaceValues = [],
+  title = "",
+  css = []
 ) {
   return `
-  <html>
+  <html>${
+    Boolean(css[0])
+      ? `<head>
+        <title>${title}</title>
+        <link rel="stylesheet" type="text/css" href="${css[0]}">
+      </head>`
+      : ""
+  }
     <body>
       <h1>Hello World.</h1>
         ${Boolean(replaceValues[0]) ? `<h2>${replaceValues[0]}</h2>` : ""}
@@ -267,7 +277,11 @@ it("should work with chunking", async () => {
   // Ensure output has bundle injected
   const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
   expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
-    getHtmlString(["entry-index.js", "entry-nested/bar.js"])
+    getHtmlString([
+      "entry-index.js",
+      "entry-nested/bar.js",
+      "chunked-603816ba.js",
+    ])
   );
 });
 
@@ -361,4 +375,39 @@ it("should throw an error if called without the correct props", async () => {
   }
 
   expect(build()).rejects.toThrow(htmlTemplate.INVALID_ARGS_ERROR);
+});
+
+it("should add any css files to the head of the template", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template_inject_css.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/import_css.js`,
+    plugins: [
+      postcss({
+        extract: true,
+        minimize: true,
+      }),
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template_inject_css.html`,
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toEqual(
+    getHtmlString("bundle.js", "", [], [], "CSS Injection Test", ["bundle.css"])
+  );
 });

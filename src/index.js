@@ -1,8 +1,8 @@
 "use strict";
 
+import escapeStringRegexp from "escape-string-regexp";
 import fs from "fs-extra";
 import path from "path";
-import escapeStringRegexp from "escape-string-regexp";
 
 const INVALID_ARGS_ERROR =
   "[rollup-plugin-generate-html-template] You did not provide a template or target!";
@@ -19,7 +19,7 @@ export default function htmlTemplate(options = {}) {
     name: "html-template",
 
     async generateBundle(outputOptions, bundleInfo) {
-      const bundles = getEntryPoints(bundleInfo);
+      const bundleKeys = Object.keys(bundleInfo);
       return new Promise(async (resolve, reject) => {
         try {
           if (!target && !template) throw new Error(INVALID_ARGS_ERROR);
@@ -56,25 +56,45 @@ export default function htmlTemplate(options = {}) {
               tmpl = tmpl.replace(regex, replacement);
             });
           }
-          const bodyCloseTag = tmpl.lastIndexOf("</body>");
+
+          let injected = tmpl;
+
+          // Inject the style tags before the head close tag
+          const headCloseTag = injected.lastIndexOf("</head>");
 
           // Inject the script tags before the body close tag
-          const injected = [
-            tmpl.slice(0, bodyCloseTag),
-            ...(await Promise.all(
-              bundles.map(async b =>
+          injected = [
+            injected.slice(0, headCloseTag),
+            ...bundleKeys
+              .filter(f => path.extname(f) === ".css")
+              .map(
+                b =>
+                  `<link rel="stylesheet" type="text/css" href="${prefix ||
+                    ""}${b}">\n`
+              ),
+            injected.slice(headCloseTag, injected.length),
+          ].join("");
+
+          const bodyCloseTag = injected.lastIndexOf("</body>");
+
+          // Inject the script tags before the body close tag
+          injected = [
+            injected.slice(0, bodyCloseTag),
+            ...bundleKeys
+              .filter(f => path.extname(f) === ".js")
+              .map(
+                async b =>
                 // For embedContent option, stuff bundle content into HTML directly,
                 // otherwise, prepare script with src tag only.
-                options.embedContent
+                  options.embedContent
                   ? `<script>\n${await fs.readFile(
                       `${outputDir}${path.sep}${prefix || ""}${b}`
                     )}\n</script>`
                   : `<script ${scriptTagAttributes.join(
                       " "
                     )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
-              )
-            )),
-            tmpl.slice(bodyCloseTag, tmpl.length),
+              ),
+            injected.slice(bodyCloseTag, injected.length),
           ].join("");
 
           // write the injected template to a file
