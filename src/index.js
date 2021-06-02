@@ -14,6 +14,7 @@ const INVALID_ARGS_ERROR =
  */
 export default function htmlTemplate(options = {}) {
   const { template, target, prefix, attrs, replaceVars } = options;
+  const scriptIncludeFilter = options.scriptIncludeFilter || (() => true);
   const scriptTagAttributes = attrs && attrs.length > 0 ? attrs : [];
   return {
     name: "html-template",
@@ -81,7 +82,11 @@ export default function htmlTemplate(options = {}) {
           injected = [
             injected.slice(0, bodyCloseTag),
             ...bundleKeys
-              .filter(f => path.extname(f) === ".js")
+              .filter(
+                f =>
+                  path.extname(f) === ".js" &&
+                  scriptIncludeFilter(f, bundleInfo[f])
+              )
               .map(
                 b =>
                   `<script ${scriptTagAttributes.join(
