@@ -63,6 +63,53 @@ On final bundle generation the provided template file will have a `script` tag i
 - `replaceVars`: An object containing variables that will be replaced in the generated html.
     Example: `replaceVars: { '__CDN_URL__': process.env.NODE_ENV === 'production' ? 'https://mycdn.com' : '' }` will replace all instances of `__CDN_URL__` with `http://mycdn.com` if the environment is production
 
+
+### Referencing hashed bundlenames
+
+If you are using hashed filenames, but want to inject the path into your template, you can do so by use of the placeholder `#{bundle_[name]}#` where `[name]` is the bare name of the file, e.g.
+
+```js
+// Rollup config
+export default {
+	input: 'src/input.js',
+	output: {
+		dir: 'dist',
+		entryFileNames: '[name].[hash].js',
+		format: 'esm',
+	},
+	plugins: [
+		htmlTemplate({
+			template: 'build/index.html',
+			target: 'dist/index.html',
+		}),
+	],
+}
+```
+
+```js
+// src/index.js
+const foo = "foo";
+export default foo;
+```
+
+```html
+<!-- build/index.html -->
+<script type="module">
+	import foo from './#{bundle_index}#';
+	console.log(foo);
+</script>
+```
+
+Would result in:
+
+```html
+<!-- dist/index.html -->
+<script type="module">
+	import foo from './index.e00ad0bd.js';
+	console.log(foo);
+</script>
+```
+
 ## License
 
 MIT

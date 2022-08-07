@@ -48,14 +48,24 @@ export default function htmlTemplate(options = {}) {
 
           // Convert buffer to a string and get the </body> index
           let tmpl = buffer.toString("utf8");
-          if (replaceVars) {
-            const replacePairs = Object.entries(replaceVars);
-            replacePairs.forEach(([pattern, replacement]) => {
-              const escapedPattern = escapeStringRegexp(pattern);
-              const regex = new RegExp(`${escapedPattern}`, "g");
-              tmpl = tmpl.replace(regex, replacement);
-            });
-          }
+
+          const bundleReplaceVars = {
+            ...(replaceVars || {}),
+            ...bundleKeys.reduce((acc, key) => {
+              const thisBundleInfo = bundleInfo[key];
+              acc[
+                `#{bundle_${thisBundleInfo.name}}#`
+              ] = `${bundleDirString}${prefix || ""}${key}`;
+              return acc;
+            }, {}),
+          };
+
+          const replacePairs = Object.entries(bundleReplaceVars);
+          replacePairs.forEach(([pattern, replacement]) => {
+            const escapedPattern = escapeStringRegexp(pattern);
+            const regex = new RegExp(`${escapedPattern}`, "g");
+            tmpl = tmpl.replace(regex, replacement);
+          });
 
           let injected = tmpl;
 

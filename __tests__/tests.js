@@ -411,3 +411,36 @@ it("should add any css files to the head of the template", async () => {
     getHtmlString("bundle.js", "", [], [], "CSS Injection Test", ["bundle.css"])
   );
 });
+
+it("should replace references to bundles with generated filename", async () => {
+  const TEMPLATE_PATH = path.join(
+    TEST_DIR,
+    "template_replace_bundle_identifiers.html"
+  );
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template_replace_bundle_identifiers.html`,
+      }),
+    ],
+  };
+  const output = {
+    dir: TEST_DIR,
+    format: "iife",
+    name: "test",
+    entryFileNames: "[name].[hash].js",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  // await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  const expectedOutput = /import foo from '\.\/index\.[a-z0-9]+\.js';/;
+  expect(generatedTemplate).toMatch(expectedOutput);
+});
