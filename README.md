@@ -63,6 +63,11 @@ On final bundle generation the provided template file will have a `script` tag i
 - `replaceVars`: An object containing variables that will be replaced in the generated html.
     Example: `replaceVars: { '__CDN_URL__': process.env.NODE_ENV === 'production' ? 'https://mycdn.com' : '' }` will replace all instances of `__CDN_URL__` with `http://mycdn.com` if the environment is production
 
+
+### Resource hints
+
+You can indicate a desired location to inject preload/prefetch resource hints for the bundled files with the placeholder `#{resource_hints}#`.
+
 ## License
 
 MIT
