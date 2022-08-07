@@ -411,3 +411,39 @@ it("should add any css files to the head of the template", async () => {
     getHtmlString("bundle.js", "", [], [], "CSS Injection Test", ["bundle.css"])
   );
 });
+
+it("should add inject resource hints at the specified location", async () => {
+  const BUNDLE_PATH = path.join(TEST_DIR, "bundle.js");
+  const TEMPLATE_PATH = path.join(TEST_DIR, "template_resource_hints.html");
+
+  const input = {
+    input: `${__dirname}/fixtures/index.js`,
+    plugins: [
+      htmlTemplate({
+        template: `${__dirname}/fixtures/template_resource_hints.html`,
+      }),
+    ],
+  };
+  const output = {
+    file: BUNDLE_PATH,
+    format: "iife",
+    name: "test",
+  };
+  const bundle = await rollup(input);
+  await bundle.write(output);
+
+  // Ensure files exist
+  await expect(fs.pathExists(BUNDLE_PATH)).resolves.toEqual(true);
+  await expect(fs.pathExists(TEMPLATE_PATH)).resolves.toEqual(true);
+
+  // Ensure output has bundle injected
+  const generatedTemplate = await fs.readFile(TEMPLATE_PATH, "utf8");
+  const resourceHintsLocation = `<head>
+		<meta name="something">
+		<link rel="preload" as="script" href="bundle.js">
+		<title>Resource hints</title>
+		</head>`.replace(/[\s]/gi, "");
+  expect(generatedTemplate.replace(/[\s]/gi, "")).toContain(
+    resourceHintsLocation
+  );
+});

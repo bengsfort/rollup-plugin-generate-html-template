@@ -36,6 +36,9 @@ export default function htmlTemplate(options = {}) {
             bundleDirString = bundleDir && `${bundleDir}/`;
           }
 
+          const generateBundlePath = path =>
+            `${bundleDirString}${prefix || ""}${path}`;
+
           // Get the target file name.
           const targetName = path.basename(target || template);
 
@@ -57,12 +60,50 @@ export default function htmlTemplate(options = {}) {
             });
           }
 
+          tmpl = tmpl.replace("#{resource_hints}#", () => {
+            const resourceHints = [
+              ...bundleKeys
+                .filter(
+                  f => path.extname(f) === ".css" && !bundleInfo[f].isEntry
+                )
+                .map(
+                  b => `<link rel="prefetch" href="${generateBundlePath(b)}">\n`
+                ),
+              ...bundleKeys
+                .filter(
+                  f => path.extname(f) === ".js" && !bundleInfo[f].isEntry
+                )
+                .map(
+                  b => `<link rel="prefetch" href="${generateBundlePath(b)}">\n`
+                ),
+              ...bundleKeys
+                .filter(
+                  f => path.extname(f) === ".css" && bundleInfo[f].isEntry
+                )
+                .map(
+                  b =>
+                    `<link rel="preload" as="style" href="${generateBundlePath(
+                      b
+                    )}">\n`
+                ),
+              ...bundleKeys
+                .filter(f => path.extname(f) === ".js" && bundleInfo[f].isEntry)
+                .map(
+                  b =>
+                    `<link rel="preload" as="script" href="${generateBundlePath(
+                      b
+                    )}">\n`
+                ),
+            ];
+
+            return resourceHints.join("");
+          });
+
           let injected = tmpl;
 
           // Inject the style tags before the head close tag
           const headCloseTag = injected.lastIndexOf("</head>");
-
-          // Inject the script tags before the body close tag
+          // Inject the style and preload tags before the head close tag
           injected = [
             injected.slice(0, headCloseTag),
             ...bundleKeys
@@ -86,7 +127,7 @@ export default function htmlTemplate(options = {}) {
                 b =>
                   `<script ${scriptTagAttributes.join(
                     " "
-                  )} src="${bundleDirString}${prefix || ""}${b}"></script>\n`
+                  )} src="${generateBundlePath(b)}"></script>\n`
               ),
             injected.slice(bodyCloseTag, injected.length),
           ].join("");
